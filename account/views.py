@@ -19,7 +19,6 @@ class RegisterView(APIView):
 
 
 class ActivateView(APIView):
-
     def get(self, request, activation_code):
         User = get_user_model()
         user = get_object_or_404(User, activation_code=activation_code)

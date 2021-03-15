@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from account.models import User
-from account.utils import send_activation_code
+from account.utils import send_activation_mail
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         email = validated_data.get('email')
         password = validated_data.get('password')
         user = User.objects.create_user(email=email, password=password)
-        send_activation_code(email=user.email, activation_code=user.activation_code)
+        send_activation_mail(email=user.email, activation_code=user.activation_code)
         return user
 
 

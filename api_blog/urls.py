@@ -15,11 +15,8 @@ Including another URLconf
 """
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-
-from main.views import CategoryListView, PostViewSet, PostImageView, CommentViewSet
+from main.views import CategoryViewSet, PostViewSet, PostImageViewSet, CommentViewSet, RatingViewSet, LikeAPIView, \
+    FavouriteAPIView
 
 from django.contrib import admin
 from django.urls import path, include
@@ -42,15 +39,24 @@ schema_view = get_schema_view(
 router = DefaultRouter()
 router.register('posts', PostViewSet)
 router.register('comments', CommentViewSet)
+router.register('categories', CategoryViewSet)
+router.register('rating', RatingViewSet)
+router.register('add-images', PostImageViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/docs/', schema_view.with_ui()),
     path('api-auth/', include('rest_framework.urls')),
-    path('v1/api/categories/', CategoryListView.as_view()),
-    path('v1/api/add-image/', PostImageView.as_view()),
+    path('v1/api/like/<int:post_id>/', LikeAPIView.as_view()),
+    path('v1/api/favourite/', FavouriteAPIView.as_view()),
     path('v1/api/account/', include('account.urls')),
     path('v1/api/', include(router.urls)),
+]
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.MEDIA_ROOT)
+
 
