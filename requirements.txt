@@ -4,3 +4,9 @@ Pillow==8.0
 djangorestframework==3.11.0
 python-decouple==3.4
 drf-yasg
+django-rest-framework-social-oauth2
+celery
+redis
+lxml==4.6.2
+requests==2.25.1
+beautifulsoup4==4.9.3

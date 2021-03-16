@@ -1,12 +1,13 @@
 from django.db import models
-
+from django.utils import timezone
 from account.models import User
 
 
-class Chat(models.Model):
-    text = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat')
+class DirectMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+    content = models.TextField(max_length=500)
+    date_sent = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.comment
+        return self.content

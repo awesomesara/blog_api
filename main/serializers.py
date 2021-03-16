@@ -130,6 +130,17 @@ class FavouriteSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['user'] = instance.user.email
-        # representation['post'] =
-
+        representation['post'] = instance.post.title
         return representation
+
+
+class HistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = History
+        fields = '__all__'
+
+
+class ParsSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=50)
+    photo = serializers.CharField(max_length=200)

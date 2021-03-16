@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from main.views import CategoryViewSet, PostViewSet, PostImageViewSet, CommentViewSet, RatingViewSet, LikeAPIView, \
-    FavouriteAPIView
+    HistoryAPIView, ParsAPIView
 
 from django.contrib import admin
 from django.urls import path, include
@@ -47,10 +47,12 @@ router.register('add-images', PostImageViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/docs/', schema_view.with_ui()),
+    path('v1/api/auth/', include('rest_framework_social_oauth2.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('v1/api/like/<int:post_id>/', LikeAPIView.as_view()),
-    path('v1/api/favourite/', FavouriteAPIView.as_view()),
+    path('v1/api/history/', HistoryAPIView.as_view()),
     path('v1/api/account/', include('account.urls')),
+    path('v1/api/news/', ParsAPIView.as_view()),
     path('v1/api/', include(router.urls)),
 ]
 

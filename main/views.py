@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -12,7 +12,9 @@ from rest_framework.views import APIView
 from .models import *
 from .permissions import IsPostAuthor
 from .serializers import PostImageSerializer, CategorySerializer, PostSerializer, CommentSerializer, RatingSerializer, \
-    LikeSerializer, FavouriteSerializer
+    LikeSerializer, FavouriteSerializer, HistorySerializer, ParsSerializer
+from .utils import add_post
+from .pars import main
 
 
 class PermissionMixin:
@@ -94,7 +96,8 @@ class PostViewSet(viewsets.ModelViewSet, PermissionMixin):
 
     @action(detail=False, methods=['get'])
     def favourites(self, request):
-        queryset = Post.objects.get(user=request.user).favourites.all()
+        queryset = Favourite.objects.all()
+        queryset = queryset.filter(user=request.user)
         serializer = FavouriteSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -105,6 +108,13 @@ class PostViewSet(viewsets.ModelViewSet, PermissionMixin):
             start_date = timezone.now() - timedelta(days=days_count)
             queryset = queryset.filter(created_at__gte=start_date)
         return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        user = request.user
+        add_post(instance, user)
+        return Response(serializer.data)
 
 
 class PostImageViewSet(PermissionMixin, viewsets.ModelViewSet):
@@ -136,17 +146,28 @@ class LikeAPIView(generics.ListAPIView):
         return queryset
 
 
-class FavouriteAPIView(generics.ListAPIView):
-    queryset = Favourite.objects.all()
-    serializer_class = FavouriteSerializer
+class HistoryAPIView(APIView):
+    queryset = History.objects.all()
+    serializer_class = HistorySerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_serializer_context(self):
-        return {'request': self.request}
+    def get(self, request):
+        user = request.user
+        post = History.objects.filter(user=user)
+        serializer = HistorySerializer(instance=post, many=True).data
+        return Response(serializer)
 
-    # def list(self, request, *args, **kwargs):
-    #     user_id = request.user
-    #     queryset = Post.objects.get(author=user_id).favourites.all()
-    #     serializer = FavouriteSerializer(queryset, many=True, context={'request': request})
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ParsAPIView(APIView):
+
+    def get(self, request):
+        dict_ = main()
+        serializer = ParsSerializer(instance=dict_, many=True)
+        return Response(serializer.data)
+
+
+
+
+
+
 

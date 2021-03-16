@@ -75,3 +75,9 @@ class Rating(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings')
     rating = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+
+
+class History(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='history')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='history')
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
