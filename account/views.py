@@ -41,20 +41,20 @@ class LogoutView(APIView):
         return Response('Successfully logout', status=status.HTTP_200_OK)
 
 
-# class ForgotPassword(APIView):
-#     def get(self, request):
-#         email = request.query_params.get('email')
-#         user = get_object_or_404(User, email=email)
-#         user.is_active=False
-#         user.create_activation_code()
-#         user.save()
-#         send_activation_mail(user.email, user.activation_code)
-#         return Response('вам было отправлено письмо', status=200)
-#
-#
-# class ForgotPasswordComplete(APIView):
-#     def post(self, request):
-#         serializer = CreateNewPasswordSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response('вы успешно восстановили пароль', status=200)
+class ForgotPassword(APIView):
+    def get(self, request):
+        email = request.query_params.get('email')
+        user = get_object_or_404(User, email=email)
+        user.is_active = False
+        user.create_activation_code()
+        user.save()
+        send_activation_mail.delay(user.email, user.activation_code)
+        return Response('вам было отправлено письмо', status=200)
+
+
+class ForgotPasswordComplete(APIView):
+    def post(self, request):
+        serializer = CreateNewPasswordSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response('вы успешно восстановили пароль', status=200)

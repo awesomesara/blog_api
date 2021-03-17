@@ -18,12 +18,10 @@ def get_page_data(html):
     for product in products:
         try:
             photo = 'https://vesti.kg' + product.find('img').get('src')
-            print(photo)
         except:
             photo = ''
         try:
             title = product.find('a').get('title')
-            print(title)
         except:
             title = ''
 

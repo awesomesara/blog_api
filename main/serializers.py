@@ -33,7 +33,7 @@ class PostImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%d/%m/%Y %H:%M:%S', read_only=True)
     # updated_at = serializers.DateTimeField(format='%d %B %Y %H:%M', read_only=True)
-    images = PostImageSerializer(many=True,read_only=True)
+    images = PostImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
@@ -54,7 +54,7 @@ class PostSerializer(serializers.ModelSerializer):
         representation['comment'] = CommentSerializer(instance.comments.all(), many=True, context=self.context).data
         representation['author'] = instance.author.email
         representation['category'] = CategorySerializer(instance.category).data
-        representation['likes_count'] = instance.likes.count()
+        representation['likes_count'] = instance.likes.filter(is_active=True).count()
         representation['rating'] = instance.ratings.aggregate(Avg('rating'))
         return representation
 

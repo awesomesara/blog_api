@@ -8,7 +8,6 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from .models import *
 from .permissions import IsPostAuthor
 from .serializers import PostImageSerializer, CategorySerializer, PostSerializer, CommentSerializer, RatingSerializer, \
@@ -164,10 +163,4 @@ class ParsAPIView(APIView):
         dict_ = main()
         serializer = ParsSerializer(instance=dict_, many=True)
         return Response(serializer.data)
-
-
-
-
-
-
 
