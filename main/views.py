@@ -37,15 +37,24 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [AllowAny, ]
 
-    @action(detail=False, methods=['get'])
-    def category(self, request):
-        queryset = Post.objects.all()
-        queryset = queryset.filter(category=request.category)
-        serializer = PostSerializer(queryset, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_serializer_context(self):
+        return {'request': self.request, 'action': self.action}
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['posts'] = Post.objects.filter(category_id=self.slug)
+    #     return context
+    #
+    # @action(detail=True, methods=['get'])
+    # def category(self, request):
+    #     category = self.get_object()
+    #     # queryset = Post.objects.all()
+    #     queryset = Post.objects.filter(category=category)
+    #     serializer = PostSerializer(queryset, many=True, context={'request': request})
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PostViewSet(viewsets.ModelViewSet, PermissionMixin):
+class PostViewSet(PermissionMixin, viewsets.ModelViewSet):
     queryset = Post.objects.all()
     queryset_fav = Favourite.objects.all()
     serializer_class = PostSerializer
@@ -116,9 +125,9 @@ class PostViewSet(viewsets.ModelViewSet, PermissionMixin):
         return Response(serializer.data)
 
 
-class PostImageViewSet(PermissionMixin, viewsets.ModelViewSet):
-    queryset = PostImage.objects.all()
-    serializer_class = PostImageSerializer
+# class PostImageViewSet(PermissionMixin, viewsets.ModelViewSet):
+#     queryset = PostImage.objects.all()
+#     serializer_class = PostImageSerializer
 
 
 class CommentViewSet(PermissionMixin, viewsets.ModelViewSet):

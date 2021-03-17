@@ -28,7 +28,6 @@ def get_page_data(html):
         data = {'title': title, 'photo': photo}
 
         list_.append(data)
-    # write_to_json(list_)
     return list_
 
 

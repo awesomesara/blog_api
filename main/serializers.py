@@ -63,11 +63,9 @@ class PostSerializer(serializers.ModelSerializer):
         user_id = request.user.id
         validated_data['author_id'] = user_id
         image_data = request.FILES
-        # print(image_data)
         post = Post.objects.create(**validated_data)
         for image in image_data.getlist('images'):
             PostImage.objects.create(image=image, post=post)
-            print(image)
         return post
 
 
@@ -100,7 +98,12 @@ class RatingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request = self.context.get('request')
-        rating = Rating.objects.create(author=request.user, **validated_data)
+        user = request.user
+        post = validated_data.get('post_id')
+        ratings = validated_data.get('rating')
+        rating = Rating.objects.get_or_create(author=user, post_id=post)[0]
+        rating.rating = ratings
+        rating.save()
         return rating
 
     def to_representation(self, instance):

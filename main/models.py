@@ -74,7 +74,7 @@ class Rating(models.Model):
 
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings')
-    rating = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+    rating = models.PositiveSmallIntegerField(choices=RATE_CHOICES, default=0)
 
 
 class History(models.Model):

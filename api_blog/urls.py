@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf import settings
 from django.conf.urls.static import static
-from main.views import CategoryViewSet, PostViewSet, PostImageViewSet, CommentViewSet, RatingViewSet, LikeAPIView, \
+from main.views import CategoryViewSet, PostViewSet,CommentViewSet, RatingViewSet, LikeAPIView, \
     HistoryAPIView, ParsAPIView
 
 from django.contrib import admin
@@ -41,7 +41,6 @@ router.register('posts', PostViewSet)
 router.register('comments', CommentViewSet)
 router.register('categories', CategoryViewSet)
 router.register('rating', RatingViewSet)
-router.register('add-images', PostImageViewSet)
 
 
 urlpatterns = [
