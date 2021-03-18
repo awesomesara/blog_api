@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
+from .utils import send_activation_mail_
 
 
 class RegisterView(APIView):
@@ -46,10 +47,10 @@ class ForgotPassword(APIView):
         email = request.query_params.get('email')
         user = get_object_or_404(User, email=email)
         user.is_active = False
-        user.create_activation_code()
+        user.create_activation_code_()
         user.save()
-        send_activation_mail.delay(user.email, user.activation_code)
-        return Response('вам было отправлено письмо', status=200)
+        send_activation_mail_(user.email, user.activation_code)
+        return Response('Вам отправлено письмо',status=200)
 
 
 class ForgotPasswordComplete(APIView):
@@ -57,4 +58,4 @@ class ForgotPasswordComplete(APIView):
         serializer = CreateNewPasswordSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response('вы успешно восстановили пароль', status=200)
+            return Response('вы успешно восстановили пароль',status=200)

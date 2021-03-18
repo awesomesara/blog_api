@@ -11,3 +11,11 @@ def send_activation_mail(email, activation_code):
         message,
         'it-world@my_project.com',
         [email, ])
+
+def send_activation_mail_(email, activation_code):
+    message = f"""код для востановления пароля - {activation_code}"""
+    send_mail(
+        'восстановление пароля',
+        message,
+        'it-world@my_project.com',
+        [email, ])

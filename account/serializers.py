@@ -54,41 +54,78 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
+# class CreateNewPasswordSerializer(serializers.Serializer):
+#     email = serializers.CharField(required=True)
+#     activation_code_for_password = serializers.CharField(max_length=6, min_length=6, required=True)
+#     password = serializers.CharField(min_length=8, required=True)
+#     password_confirm = serializers.CharField(min_length=8, required=True)
+#
+#     def validate_email(self, email):
+#         if not User.objects.filter(email=email, is_active=False).exists():
+#             raise serializers.ValidationError('user with this email dont found')
+#         return email
+#
+#     def validate_activation_code(self, code):
+#         if not User.objects.filter(activation_code_for_password=code, is_active=False).exists():
+#             raise serializers.ValidationError('неверный код активации')
+#         return code
+#
+#     def validate(self, attrs):
+#         password = attrs.get('password')
+#         password_confirm = attrs.get('password_confirm')
+#         if password != password_confirm:
+#             raise serializers.ValidationError('пароли не совпадают')
+#         return attrs
+#
+#     def save(self, **kwargs):
+#         data = self.validated_data
+#         email = data.get('email')
+#         code = data.get('email')
+#         password = data.get('password')
+#         try:
+#             user = User.objects.get(email=email, activation_code_for_password=code, is_active=False)
+#         except User.DoesNotExist:
+#             raise serializers.ValidationError('пользователь не найден')
+#         user.is_active = True
+#         user.activation_code_for_password = ''
+#         user.set_password(password)
+#         user.save()
+
 class CreateNewPasswordSerializer(serializers.Serializer):
-    email = EmailField(required=True)
-    activation_code = serializers.CharField(max_length=6, min_length=6, required=True)
-    password = serializers.CharField(min_length=8, required=True)
-    password_confirm = serializers.CharField(min_length=8, required=True)
+    email = serializers.CharField(required=True)
+    activation_code = serializers.CharField(max_length=6,min_length=6,required=True)
+    password = serializers.CharField(min_length=6, required=True)
+    password_confirm = serializers.CharField(min_length=6,required=True)
 
     def validate_email(self, email):
-        if User.objects.filter(email=email, is_active=False).exists():
-            raise serializers.ValidationError('user with this number dont found')
+        if not User.objects.filter(email=email, is_active=False).exists():
+            raise serializers.ValidationError('Пользователь с таким emailom не найден!!')
         return email
 
-    def validate_activation_code(self, code):
-        if User.objects.filter(activation_code=code, is_active=False).exists():
-            raise serializers.ValidationError('неверный код активации')
-        return code
+    def validate_activation_code(self,activation_code):
+        if not User.objects.filter(activation_code=activation_code, is_active=False).exists():
+            raise serializers.ValidationError('Пользователь с таким активационным кодом не найден!!')
+        return activation_code
 
     def validate(self, attrs):
         password = attrs.get('password')
         password_confirm = attrs.get('password_confirm')
         if password != password_confirm:
-            raise serializers.ValidationError('пароли не совпадают')
+            raise serializers.ValidationError('Пароли не совпадают')
         return attrs
 
     def save(self, **kwargs):
         data = self.validated_data
         email = data.get('email')
-        code = data.get('email')
+        code = data.get('activation_code')
         password = data.get('password')
         try:
             user = User.objects.get(email=email, activation_code=code, is_active=False)
         except User.DoesNotExist:
-            raise serializers.ValidationError('пользователь не найден')
+            raise serializers.ValidationError('Пользователь не найден')
+
         user.is_active = True
         user.activation_code = ''
         user.set_password(password)
         user.save()
         return user
-

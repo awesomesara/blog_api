@@ -2,47 +2,48 @@ import telebot
 from main.MyToken import token
 from telebot import types
 from main.models import Post
-from main.serializers import PostSerializer
+from main.serializers import PostSerializer, ParsSerializer
+from main.pars import main
 
 bot = telebot.TeleBot(token)
 
-# кнопки для выбора обьявлений
+
+def get():
+    dict_ = main()
+    serializer = ParsSerializer(instance=dict_, many=True).data
+    return serializer
+
+
 income_keyboard = types.InlineKeyboardMarkup()
-data = Post.objects.all()
-print(data)
-income_keyboard = types.InlineKeyboardMarkup()
+
+reply_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+btn1 = types.KeyboardButton('Да')
+btn2 = types.KeyboardButton('Нет')
+reply_keyboard.add(btn1, btn2)
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
     chat_id = message.chat.id
-    index = 1
-    for title in data:
-        new_title = title[1]
-        button = types.InlineKeyboardButton(f'{index}. {new_title}', callback_data=f'{index}')
-        index = index + 1
-        income_keyboard.add(button)
-    bot.send_message(chat_id, 'Интересны сегодняшние обьявления авто? \n Свежие объявления 👇', reply_markup=income_keyboard)
+    msg = bot.send_message(chat_id, 'Хэээй, привет! \nНовости уже ждут тебя! Хочешь на них взглянуть?', reply_markup=reply_keyboard)
+    bot.register_next_step_handler(msg, get_inline)
 
 
-panel = types.InlineKeyboardMarkup()
-button1 = types.InlineKeyboardButton('Вернуться к списку', callback_data='back')
-button2 = types.InlineKeyboardButton('Выйти', callback_data='exit')
-panel.add(button1, button2)
-
-
-@bot.callback_query_handler(func=lambda c: True)
-def inline(c):
-    if c.data == 'back':
-        bot.send_message(c.message.chat.id, 'Вы вернулись к списку', reply_markup=income_keyboard)
-    elif c.data == 'exit':
-        bot.edit_message_text('До свидания!!!', c.message.chat.id, c.message.message_id, reply_markup=None)
-    else:
-        list_ = data
-        list_elem = list(list_[int(c.data) - 1].values())
-        bot.send_message(c.message.chat.id,
-                         f'Машина: {list_elem[0]} \n Фото: {list_elem[1]} \n Описание: {list_elem[2]} \n ',
-                         reply_markup=panel)
+def get_inline(c):
+    # chat_id = c.chat.id
+    if c.text == 'Да':
+        # chat_id = c.chat.id
+        index = 1
+        list_ = get()
+        for list_elem in list_:
+            print(list_elem)
+            bot.send_message(c.chat.id,
+                             f'Новости {list_elem[0]} \n Фото: {list_elem[1]} \n')
+    if c.text == 'Нет':
+        bot.send_message(c.chat.id, 'эх..')
 
 
 bot.polling()
+
+
+

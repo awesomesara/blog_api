@@ -102,7 +102,7 @@ class PostViewSet(PermissionMixin, viewsets.ModelViewSet):
         serializer = PostSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], )
     def favourites(self, request):
         queryset = Favourite.objects.all()
         queryset = queryset.filter(user=request.user)
