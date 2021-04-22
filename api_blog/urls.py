@@ -46,7 +46,6 @@ router.register('rating', RatingViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/docs/', schema_view.with_ui()),
-    path('v1/api/auth/', include('rest_framework_social_oauth2.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('v1/api/like/<int:post_id>/', LikeAPIView.as_view()),
     path('v1/api/history/', HistoryAPIView.as_view()),

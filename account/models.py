@@ -41,10 +41,6 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    def create_activation_code_(self):
-        code = get_random_string(length=6, allowed_chars='1234567890')
-        self.activation_code = code
-
     def create_activation_code(self):
         import hashlib
         string = self.email + str(self.id)
