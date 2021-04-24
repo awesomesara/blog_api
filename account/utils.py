@@ -9,5 +9,5 @@ def send_activation_mail(email, activation_code):
     send_mail(
         'Активация аккаунта',
         message,
-        'it-world@my_project.com',
+        'world@my_project.com',
         [email, ])
